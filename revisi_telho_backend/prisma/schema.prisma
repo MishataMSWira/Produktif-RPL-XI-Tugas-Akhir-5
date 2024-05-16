@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root@localhost:3306/telho_ta_db"
+}
+
+model admin {
+  id        Int      @id @default(autoincrement())
+  name      String   @default("")
+  email     String   @default("")
+  password  String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model room_type {
+  id          Int           @id @default(autoincrement())
+  name        String        @default("")
+  max_guests  Int           @default(0)
+  image       String        @default("")
+  room_price  Int           @default(0)
+  description String        @default("")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  room        room[]
+  reservation reservation[]
+}
+
+model room {
+  id          Int       @id @default(autoincrement())
+  no_room     Int       @default(0)
+  category    room_type @relation(fields: [room_typeId], references: [id])
+  room_typeId Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model customer {
+  id          Int           @id @default(autoincrement())
+  name        String        @default("")
+  email       String        @default("")
+  password    String        @default("")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  reservation reservation[]
+}
+
+model reservation {
+  id               Int       @id @default(autoincrement())
+  customer_id      Int       @default(0)
+  room_typeId      Int       @default(0)
+  check_in         DateTime  @default(now())
+  check_out        DateTime  @default(now())
+  number_of_night  Int       @default(0)
+  amount_of_guests Int       @default(0)
+  price            Int       @default(0)
+  room_detail      room_type @relation(fields: [room_typeId], references: [id])
+  customer_detail  customer  @relation(fields: [customer_id], references: [id])
+}
